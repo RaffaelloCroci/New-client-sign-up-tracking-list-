@@ -1,0 +1,52 @@
+-- Step 1: Define a common table expression (CTE) to establish a time frame
+WITH time_frame_week AS
+(
+    SELECT date_trunc('day', NOW()) - INTERVAL '3 days' AS start_date
+) 
+
+-- Step 2: Retrieve data to track new client sign-ups
+SELECT
+    cc.id AS "Client ID",
+    au.date_joined AS "Date Joined",
+    cc.company_name AS "Company Name",
+    cc.mobile AS "Mobile",
+    au.email AS "Email",
+    CONCAT(cc.first_name, ' ', cc.last_name) AS "Contact Name",
+    
+    -- Step 3: Map category_id values to corresponding categories
+    CASE
+        WHEN cc.category_id = '1' THEN 'Online business'
+        WHEN cc.category_id = '2' THEN 'Delivery'
+        WHEN cc.category_id = '3' THEN 'Bar/Pub'
+        WHEN cc.category_id = '4' THEN 'Nightclub'
+        WHEN cc.category_id = '5' THEN 'Venue/Event company'
+        WHEN cc.category_id = '6' THEN 'Restaurant'
+        WHEN cc.category_id = '7' THEN 'Catering'
+        WHEN cc.category_id = '8' THEN 'Hotel'
+        WHEN cc.category_id = '9' THEN 'Private'
+        WHEN cc.category_id = '10' THEN 'Other'
+        ELSE NULL
+    END AS "Category",
+
+    -- Step 4: Determine if any bookings were made for the client
+    CASE
+        WHEN COUNT(bb.id) != 0 THEN 'Yes'
+        ELSE 'No'
+    END AS "Booking Made?",
+    
+    COUNT(bb.id) AS "Number of Bookings"
+
+-- Step 5: Join tables to gather relevant data
+FROM client_client cc
+LEFT JOIN auth_user au ON au.id = cc.user_id
+LEFT JOIN job_jobrequest jj ON jj.client_id = cc.id
+LEFT JOIN booking_booking bb ON bb.jobrequest_id = jj.id
+
+-- Step 6: Apply filters to select the desired data
+WHERE au.date_joined >= '2021-04-01'
+
+-- Step 7: Group results by specific columns for aggregation
+GROUP BY 1, 2, 3, 4, 5, 6, 7
+
+-- Step 8: Order the results in descending order by date joined
+ORDER BY "Date Joined" DESC;
