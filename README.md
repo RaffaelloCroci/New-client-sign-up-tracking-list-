@@ -1,9 +1,7 @@
 # New-client-sign-up-tracking-list-
 This query is designed to provide a list of new client sign-ups with additional details, such as category and booking status, and allows for tracking and analysis of new clients.
 
-
-
-- **Title**: This query is titled "New Client Sign-Up Tracking List" to describe its purpose.
+Explanation:
 
 - **Step 1**: A common table expression (CTE) named `time_frame_week` is defined to calculate a time frame. It captures the date 3 days before the current date and time.
 
